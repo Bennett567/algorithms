@@ -10,7 +10,7 @@ coins[2][1] = 1
 coins[3][1] = 1
 coins[4][1] = 2
 coins[5][1] = 1
-coins[6][1] = 1
+coins[][1] = 1
 coins[7][1] = 2
 console.log(coins)
 find(499,coins)
@@ -55,6 +55,34 @@ matrix[0][2] = 2;
 matrix[0][3] = 2;
 console.log(matrix);
 
+function copy (arr){
+  let mcopy 
+  for (var i = 0; i < 5; i++) {
+    for (var j = 0; j < 5; j++) {
+      mcopy[i][j] = matrix[i][j]
+    }
+  }
+  return mcopy
+}
+
+function should(mo, ve, player, arr){
+  if(player == 1){
+    if (ve == 4){ 
+      return false
+    }
+    if(arr[mo-1][ve+1] == 2){
+      return false;
+    }
+  }else if(player == 2){
+    if(mo == 4){
+      return false
+    }
+    if(arr[mo+1][ve-1] == 2){
+      return false;
+    }
+  }
+  return true
+
 function check(mo, ve, player, arr) {
   if (player == 1) {
     if (arr[mo][ve + 1] == 0) {
@@ -63,6 +91,9 @@ function check(mo, ve, player, arr) {
       return 2;
     }
   } else {
+    if(mo == 4){
+      return 0
+    }
     if (arr[mo + 1][ve] == 0) {
       return 1;
     } else if (arr[mo + 2][ve] == 0 && arr[mo + 1][ve] == 1) {
@@ -87,6 +118,7 @@ function move(mo, ve, player, arr) {
         break;
       case 0:
         console.log("invalid move");
+        return 0
         break;
     }
   } else if (player == 2) {
@@ -103,6 +135,7 @@ function move(mo, ve, player, arr) {
         break;
       case 0:
         console.log("invalid move");
+        return 0
         break;
     }
   }
@@ -120,20 +153,14 @@ function win(arr) {
   }
   return true;
 }
-let poo = 0,
-  por = 0,
-  poh = 0,
-  pto = 0,
-  ptr = 0,
-  pth = 0;
+let first
+let p1move = [0,0,0]
+let p2move = [0,0,0]
+
 let answer;
 let answer2;
-let pooc = 0,
-  porc = 0,
-  pohc = 0,
-  ptoc = 0,
-  ptrc = 0,
-  pthc = 0;
+let p1movec = [0,0,0]
+let p2movec = [0,0,0]
 let p1inv = false;
 let p2inv = false;
 let playerans = readline.question("Which player are you? \n");
@@ -144,24 +171,24 @@ while (win(matrix)) {
     answer = readline.question("P1 move: \n");
     switch (parseInt(answer, 10)) {
       case 1:
-        if (!(check(1, poo, 1, matrix) == 0)) {
-          poo += move(1, poo, 1, matrix);
+        if (!(check(1, p1move[0], 1, matrix) == 0)) {
+          p1move[0] += move(1, p1move[0], 1, matrix);
         } else {
           console.log("invalid");
           p1inv = true;
         }
         break;
       case 2:
-        if (!(check(2, por, 1, matrix) == 0)) {
-          por += move(2, por, 1, matrix);
+        if (!(check(2, p1move[1], 1, matrix) == 0)) {
+          p1move[1] += move(2, p1move[1], 1, matrix);
         } else {
           console.log("invalid");
           p1inv = true;
         }
         break;
       case 3:
-        if (!(check(3, poh, 1, matrix) == 0)) {
-          poh += move(3, poh, 1, matrix);
+        if (!(check(3, p1move[2], 1, matrix) == 0)) {
+          p1move[2] += move(3, p1move[2], 1, matrix);
         } else {
           console.log("invalid");
           p1inv = true;
@@ -179,24 +206,24 @@ while (win(matrix)) {
     answer2 = readline.question("P2 move: \n");
     switch (parseInt(answer2, 10)) {
       case 1:
-        if (check(pto, 1, 2, matrix) == 1 || check(pto, 1, 2, matrix) == 2) {
-          pto += move(pto, 1, 2, matrix);
+        if (check(p2move[0], 1, 2, matrix) == 1 || check(p2move[0], 1, 2, matrix) == 2) {
+          p2move[0] += move(p2move[0], 1, 2, matrix);
         } else {
           console.log("invalid");
           p2inv = true;
         }
         break;
       case 2:
-        if (!(check(ptr, 2, 2, matrix) == 0)) {
-          ptr += move(ptr, 2, 2, matrix);
+        if (!(check(p2move[1], 2, 2, matrix) == 0)) {
+          p2move[1] += move(p2move[1], 2, 2, matrix);
         } else {
           console.log("invalid");
           p2inv = true;
         }
         break;
       case 3:
-        if (!(check(pth, 3, 2, matrix) == 0)) {
-          pth += move(pth, 3, 2, matrix);
+        if (!(check(p2move[2], 3, 2, matrix) == 0)) {
+          p2move[2] += move(p2move[2], 3, 2, matrix);
         } else {
           console.log("invalid");
           p2inv = true;
@@ -210,21 +237,16 @@ while (win(matrix)) {
   }
   console.log(matrix);
 }
-function findgood(movep1, movep2) {
-  if (matrixc == []) {
-    matrixc = [
-      new Array(5),
-      new Array(5),
-      new Array(5),
-      new Array(5),
-      new Array(5),
-    ];
-    for (var i = 0; i < 5; i++) {
-      for (var j = 0; j < 5; j++) {
-        matrixc[i][j] = matrix[i][j];
-      }
-    }
-  }
+/*PlayAnyGame(X, player):
+  if player has already won in state X
+    return Good
+  if player has already lost in state X
+    return Bad
+  for all legal moves X   Y
+    if PlayAnyGame(Y,¬player) = Bad
+      return Good
+return Bad*/
+function findgood(arr, p1c, p2c) {
   if (player1 == 1) {
     if (win1 == 1) {
       return true;
@@ -240,9 +262,24 @@ function findgood(movep1, movep2) {
   }
   if (player1 == 1) {
     if (matrix[1][0] == matrix[2][0] == matrix[3][0] == 1){
-      console.log(Math.floor((Math.random()+0.5)*3))
+      first = Math.floor((Math.random()+0.5)*3)
+      console.log(first)
+      p1movec[0] += move(first, p1movec[0], 1, arr)
     }
+    p2c[0] = p2move[0];
+    p2c[1] = p2move[1];
+    p2c[2] = p2move[2];
+    let cop = copy(arr)
+    //meg kell nézni tudunk e lépni a jelen cuccal
+    //folytassuk később?
+    
+    p1movec[0] += move(1, p1movec[0], 1, arr)
+    player1 = 2
+    findgood(cop)
+    p1movec[1] += move(2, p1movec[0], 1, arr)
+    p1movec[2] += move(3, p1movec[0], 1, arr)
+    findgood
   } else if (player1 == 2) {
-
+    //második ként kezdünk vagy második játkos lépéseit nézzük
   }
 }
