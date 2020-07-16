@@ -239,11 +239,10 @@ function findgood(movep1, movep2) {
     }
   }
   if (player1 == 1) {
-    movep1[0] = 1;
-    move(1, pooc, player1, matrixc);
-    move(ptoc, 1, 2, matrixc);
-    movep2[0] = 1;
+    if (matrix[1][0] == matrix[2][0] == matrix[3][0] == 1){
+      console.log(Math.floor((Math.random()+0.5)*3))
+    }
   } else if (player1 == 2) {
-    movep1[0] = answer;
+
   }
 }
